@@ -1,4 +1,4 @@
-@yoavweiss, @tunetheweb
+[@yoavweiss](https://github.com/yoavweiss), [@tunetheweb](https://github.com/tunetheweb)
 
 # Speculative load measurement API
 
