@@ -12,12 +12,12 @@ This proposal addresses this by exposing information about unused speculative lo
 ## Goals
 
 1. Enable developers to measure the effectiveness of their speculation rules and preload strategies. 
-2. Expose relevant metadata (tags, as attribute values) to make the above measurement actionable.
+1. Expose relevant metadata (speculation rules [tags](https://html.spec.whatwg.org/C#prefetch-record-tags), "as" attribute values) to make the above measurement actionable.
+1. Avoid exposing cross-origin data.
+1. Only expose speculation data after the page starts [unloading](https://html.spec.whatwg.org/C#unload-a-document), to reduce potential confusion.
 
 ## Non-Goals
 
-1. Exposing speculation data before the page starts [unloading](https://html.spec.whatwg.org/C#unload-a-document).
-1. Exposing cross-origin data.
 
 ## API Design
 
