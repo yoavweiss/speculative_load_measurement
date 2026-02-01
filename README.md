@@ -12,7 +12,7 @@ This proposal addresses this by exposing information about unused speculative lo
 ## Goals
 
 1. Enable developers to measure the effectiveness of their speculation rules and preload strategies. 
-1. Expose relevant metadata ([speculation rules tags](https://html.spec.whatwg.org/C#prefetch-record-tags), "as" attribute values) to make the above measurement actionable.
+1. Expose relevant metadata ([speculation rules tags](https://html.spec.whatwg.org/C#prefetch-record-tags), `as` attribute values) to make the above measurement actionable.
 1. Only expose speculation data after the page starts [unloading](https://html.spec.whatwg.org/C#unload-a-document), to reduce potential confusion.
 1. Only expose data on user actions in the current document (even for cross-origin speculative loads), without exposing cross-origin data.
 
@@ -35,7 +35,7 @@ The information contained would be:
   - URL
   - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
 
-### Why pagehide?
+### Why `pagehide`?
 
 Only on page unload is the final state of preload usage and/or speculations known. `pagehide` is the preferred event to handle over `beforeunload` (which can be cancelled) and `unload` (which has reliability issues for bfcache-eligible pages and [is being deprecated](https://developer.chrome.com/docs/web-platform/deprecating-unload)).
 
