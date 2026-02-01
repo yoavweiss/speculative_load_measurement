@@ -17,21 +17,21 @@ This proposal addresses this by exposing information about unused speculative lo
 1. Only expose data on user actions in the current document (even for cross-origin speculative loads), without exposing cross-origin data.
 
 ## Non-Goals
-
+1. Enable developers to detect and handle situations when speculations are unsuccessful.
 
 ## API Design
 
-We will extend the event object that "pagehide" gets as input to include a `speculations` attribute, which will hold information about unused preloads, prefetches and prerenders.
+We will extend the event object that "pagehide" gets as input to include a `speculations` attribute, which will hold information about unused preloads, speculation rules prefetches and speculation rules prerenders.
 
 The information contained would be:
 - Preload
   - URL
   - The [`as` attribute](https://html.spec.whatwg.org/#attr-link-as) value, as it can often lead to mismatches and unused preloads
   - The `crossorigin` attribute value, as it can similarly lead to mismatches
-- Prefetch
+- Speculation rules navigational Prefetch
   - URL
   - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
-- Prerender
+- Speculation Rules Prerender
   - URL
   - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
 
@@ -60,9 +60,11 @@ window.addEventListener('pagehide', (event) => {
 
 ### "Unused" Definition
 
-A speculation is considered **unused** if it was initiated but the user navigated to a different URL than the speculation target.
+A speculative navigation is considered **unused** if it was initiated but the user navigated to a different URL than the speculation target.
 The determination is made at pagehide time by comparing all tracked speculations against the URL of the navigation that triggered the page unload.
 Whether or not a speculation was successful (e.g. didn't result in a 403) is not relevant. A failed speculation that the user ended up going to its target will be considered "used".
+
+A preload is considered **unused** if no resource load during the page lifetime [consumed](https://html.spec.whatwg.org/multipage/links.html#consume-a-preloaded-resource) it from the [map of preloaded resources](https://html.spec.whatwg.org/multipage/links.html#map-of-preloaded-resources).
 
 ## Security and Privacy Considerations
 
