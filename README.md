@@ -92,22 +92,35 @@ Beyond that, this proposal can potentially make it easier to access same-origin 
 ## Considered Alternatives
 
 ### PerformanceObserver API
+
 PerformanceObserver is the natural choice for exposing performance-oriented data.
-At the same time, there were a couple of issues with PerformanceObserver in this particular case:
+At the same time, there are a couple of issues with PerformanceObserver in this particular case:
 * The information we're interested in here is only known when the page is being dismissed.
 * There's no single point in time in which we know that a load went unused before the page dismissal events. So an observer feels like the wrong pattern.
 * By default, observers are async. That makes it particularly hard to work with them inside dismissal events, after which the page unloads.
 
 Beyond the above, there's also a concern with exposing some information about speculative loads before we know for sure that they will go unused. That feels like a footgun, and something developers may end up misusing.
 
-### An imperative JavaScript API (e.g. document.unusedPreloads)
-An imperative JS API may not be async, but would still suffer from exposing incomplete information to developers throughout the lifetime of the page, and can end up as a footgun.
+### An imperative JavaScript API
+
+An imperative JS API  (e.g. `document.speculations`) may not be async, but would still suffer from exposing incomplete information to developers throughout the lifetime of the page. Additionally it is difficult to know when it will have been updated with the future navigation information so will likely only be read on page hide anyway, at which point that event seems a better location.
+
+Finally, a [the non-goals](#non-goals) is to help react to unsuccessful speculations which may have other concerns if exposed earlier in the page lifecycle (e.g. override user preferences regarding speculations).
 
 ### Reporting API
-While a Reporting API can be most accurate in terms of the point in time it can send the information (e.g. after the page was already dismissed, and potentially after eviction from the BFCache), the Reporting API presents some challenges to developers, who'd need to set up new collection backends and would need to join the data reported by the API, with other performance data collected through JS.
+
+While a Reporting API can be most accurate in terms of the point in time it can send the information (e.g. after the page was already dismissed, and potentially after eviction from the bfcache), the Reporting API presents some challenges to developers, who'd need to set up new collection backends and would need to join the data reported by the API, with other performance data collected through JS.
 
 ## Frequently Asked Questions
 
 ### Can't you get that information from server side logs?
 
+It its tricky to correlate previous speculative requests with future page loads.
+
+Additionally, many resources or navigations may be served from caches (CDNs, brwoser caches...etc.) further making this difficult (impossible?) to measure server-side.
+
 ### What about `<link rel=prefetch>` and `<link rel=prerender>`?
+
+As detailed in [the non-goals](#non-goals) resource prefetches (as opposed to navigation prefetches) are often for furture page views so are explicitly excluded. `<link rel=preload>` should be used for this page view and so is excluded.
+
+`<link rel=prerender>` is an older API which has been replaced with the Speculation Rules API, and may be deprecated in future, so is excluded. Usage of this API is also low, and maybe drop further once [`prerender_until_script` becomes available by default](https://developer.chrome.com/blog/prerender-until-script-origin-trial?hl=en).
