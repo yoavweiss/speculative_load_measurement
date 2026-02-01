@@ -121,6 +121,6 @@ Additionally, many resources or navigations may be served from caches (CDNs, brw
 
 ### What about `<link rel=prefetch>` and `<link rel=prerender>`?
 
-As detailed in [the non-goals](#non-goals) resource prefetches (as opposed to navigation prefetches) are often for furture page views so are explicitly excluded. `<link rel=preload>` should be used for this page view and so is excluded.
+As detailed in [the non-goals](#non-goals), resource prefetches (as opposed to navigation prefetches) are often for future page views so are explicitly excluded. `<link rel=preload>` should be used for this page view and so is included.
 
 `<link rel=prerender>` is an older API which has been replaced with the Speculation Rules API, and may be deprecated in future, so is excluded. Usage of this API is also low, and likely will drop further once [`prerender_until_script` becomes available by default](https://developer.chrome.com/blog/prerender-until-script-origin-trial?hl=en).
