@@ -92,12 +92,19 @@ Beyond that, this proposal can potentially make it easier to access same-origin 
 ## Considered Alternatives
 
 ### PerformanceObserver API
+PerformanceObserver is the natural choice for exposing performance-oriented data.
+At the same time, there were a couple of issues with PerformanceObserver in this particular case:
+* The information we're interested in here is only known when the page is being dismissed.
+* There's no single point in time in which we know that a load went unused before the page dismissal events. So an observer feels like the wrong pattern.
+* By default, observers are async. That makes it particularly hard to work with them inside dismissal events, after which the page unloads.
+
+Beyond the above, there's also a concern with exposing some information about speculative loads before we know for sure that they will go unused. That feels like a footgun, and something developers may end up misusing.
 
 ### An imperative JavaScript API (e.g. document.unusedPreloads)
+An imperative JS API may not be async, but would still suffer from exposing incomplete information to developers throughout the lifetime of the page, and can end up as a footgun.
 
 ### Reporting API
-
-### `document.speculations`
+While a Reporting API can be most accurate in terms of the point in time it can send the information (e.g. after the page was already dismissed, and potentially after eviction from the BFCache), the Reporting API presents some challenges to developers, who'd need to set up new collection backends and would need to join the data reported by the API, with other performance data collected through JS.
 
 ## Frequently Asked Questions
 
