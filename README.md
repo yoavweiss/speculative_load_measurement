@@ -18,6 +18,9 @@ This proposal addresses this by exposing information about unused speculative lo
 
 ## Non-Goals
 1. Enable developers to detect and handle situations when speculations are unsuccessful.
+1. Measurement of prefetched resources (as opposed to prefetched navigations).
+  - Speculative resource fetches for the current page are better served with preload, which is covered.
+  - For speculative resource fetches for future pages, it's very hard to say with certainty that they were not used, as they may still be used in a future navigation.
 
 ## API Design
 
@@ -47,7 +50,7 @@ The intent of the API is to provide a means of reasonably measuring preload/spec
 
 ```javascript
 window.addEventListener('pagehide', (event) => {
-  const { unusedPreloads, unusedPrefetches, unusedPrerenders } = event.speculations;
+  const { unusedPreloads, unusedNavigationalPrefetches, unusedPrerenders } = event.speculations;
 
   // Send unused speculation data to analytics endpoint
   fetch('/analytics/unused-speculations', {
@@ -56,7 +59,7 @@ window.addEventListener('pagehide', (event) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       unusedPreloads,
-      unusedPrefetches,
+      unusedNavigationalPrefetches,
       unusedPrerenders
     })
   });
@@ -75,12 +78,14 @@ A preload is considered **unused** if no resource load during the page lifetime 
 
 ### bfcache handling
 
-Uponk restore from bfcache, counts will not be reset and it's possible for unused preloads/speculations to reduce on second and subsequent navigations away from such pages.
+Upon restore from bfcache, counts will not be reset and it's possible for unused preloads/speculations to reduce on second and subsequent navigations away from such pages.
+
+Note: This can result in undercounting of used prefetches. We need to figure out what that means.
 
 ## Security and Privacy Considerations
 
 The above definition for "used" explicitly obfuscates whether a certain speculation was successful or not.
-That is important when discussing cross-origin fetches (either prefetch or prerender), as otherwise it can expose cross-origin HTTP response status.
+That is important when discussing cross-origin fetches (either navigational prefetch or prerender), as otherwise it can expose cross-origin HTTP response status.
 
 Beyond that, this proposal can potentially make it easier to access same-origin data (e.g. "user navigated to a certain link", "user had certain sections go into the viewport" or "user hovered over something"). This data is already something developers can gather today.
 
@@ -88,7 +93,14 @@ Beyond that, this proposal can potentially make it easier to access same-origin 
 
 ### PerformanceObserver API
 
-### An imperitive JavaScript API (e.g. document.unusedPreloads)
+### An imperative JavaScript API (e.g. document.unusedPreloads)
 
 ### Reporting API
 
+### `document.speculations`
+
+## Frequently Asked Questions
+
+### Can't you get that information from server side logs?
+
+### What about `<link rel=prefetch>` and `<link rel=prerender>`?
