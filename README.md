@@ -19,8 +19,8 @@ This proposal addresses this by exposing information about unused speculative lo
 ## Non-Goals
 1. Enable developers to detect and handle situations when speculations are unsuccessful.
 1. Measurement of prefetched resources (as opposed to prefetched navigations).
-  - Speculative resource fetches for the current page are better served with preload, which is covered.
-  - For speculative resource fetches for future pages, it's very hard to say with certainty that they were not used, as they may still be used in a future navigation.
+   - Speculative resource fetches for the current page are better served with preload, which is covered.
+   - For speculative resource fetches for future pages, it's very hard to say with certainty that they were not used, as they may still be used in a future navigation.
 
 ## API Design
 
@@ -44,7 +44,7 @@ Only on page unload is the final state of preload usage and/or speculations know
 
 Note that `pagehide` does still not have reliability guarantees, particularly on mobile, if the page is dismissed without being unloaded (e.g. killed while backgrounded). However, the alternative `visibilitychange` event,  while being the last reliable event, does not indicate the page is being navigated away from, and may also be called multiple times as tabs are switched back and forth.
 
-The intent of the API is to provide a means of reasonably measuring preload/speculation usage across a broad set of page loads rather than to provide comprehensive guarantees of reporting for every page load, so this reliability issue is a tradeof to reduce developer complexity of other alternatives.
+The intent of the API is to provide a means of reasonably measuring preload/speculation usage across a broad set of page loads rather than to provide comprehensive guarantees of reporting for every page load, so this reliability issue is a tradeoff to reduce developer complexity of other alternatives.
 
 ### Example Usage
 
@@ -103,7 +103,7 @@ Beyond the above, there's also a concern with exposing some information about sp
 
 ### An imperative JavaScript API
 
-An imperative JS API  (e.g. `document.speculations`) may not be async, but would still suffer from exposing incomplete information to developers throughout the lifetime of the page. Additionally it is difficult to know when it will have been updated with the future navigation information so will likely only be read on page hide anyway, at which point that event seems a better location.
+An imperative JS API  (e.g. `document.speculations`) would suffer from exposing incomplete information to developers throughout the lifetime of the page. Additionally it is difficult to know when it will have been updated with the future navigation information so will likely only be read on page hide anyway, at which point that event seems a better place for the API.
 
 Finally, one of [the non-goals](#non-goals) is to help react to unsuccessful speculations which may have other concerns if exposed earlier in the page lifecycle (e.g. override user preferences regarding speculations).
 
@@ -115,9 +115,9 @@ While a Reporting API can be most accurate in terms of the point in time it can 
 
 ### Can't you get that information from server side logs?
 
-It is tricky to correlate previous speculative requests with future page loads.
+It is tricky to correlate previous speculative requests with future page loads on the server.
 
-Additionally, many resources or navigations may be served from caches (CDNs, brwoser caches...etc.) further making this difficult (impossible?) to measure server-side.
+Additionally, many resources or navigations may be served from caches (CDNs, browser caches...etc.) further making this difficult (impossible?) to measure server-side.
 
 ### What about `<link rel=prefetch>` and `<link rel=prerender>`?
 
