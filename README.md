@@ -16,7 +16,7 @@ This proposal addresses this by exposing information about unused speculative lo
 
 ## Non-Goals
 
-1. Exposing speculation data before the page is dismissed.
+1. Exposing speculation data before the page starts [unloading](https://html.spec.whatwg.org/C#unload-a-document).
 1. Exposing cross-origin data.
 
 ## API Design
