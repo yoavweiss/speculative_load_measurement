@@ -13,8 +13,8 @@ This proposal addresses this by exposing information about unused speculative lo
 
 1. Enable developers to measure the effectiveness of their speculation rules and preload strategies. 
 1. Expose relevant metadata (speculation rules [tags](https://html.spec.whatwg.org/C#prefetch-record-tags), "as" attribute values) to make the above measurement actionable.
-1. Avoid exposing cross-origin data.
 1. Only expose speculation data after the page starts [unloading](https://html.spec.whatwg.org/C#unload-a-document), to reduce potential confusion.
+1. Only expose data on user actions in the current document (even for cross-origin speculative loads), without exposing cross-origin data.
 
 ## Non-Goals
 
