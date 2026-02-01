@@ -105,7 +105,7 @@ Beyond the above, there's also a concern with exposing some information about sp
 
 An imperative JS API  (e.g. `document.speculations`) may not be async, but would still suffer from exposing incomplete information to developers throughout the lifetime of the page. Additionally it is difficult to know when it will have been updated with the future navigation information so will likely only be read on page hide anyway, at which point that event seems a better location.
 
-Finally, a [the non-goals](#non-goals) is to help react to unsuccessful speculations which may have other concerns if exposed earlier in the page lifecycle (e.g. override user preferences regarding speculations).
+Finally, one of [the non-goals](#non-goals) is to help react to unsuccessful speculations which may have other concerns if exposed earlier in the page lifecycle (e.g. override user preferences regarding speculations).
 
 ### Reporting API
 
@@ -115,7 +115,7 @@ While a Reporting API can be most accurate in terms of the point in time it can 
 
 ### Can't you get that information from server side logs?
 
-It its tricky to correlate previous speculative requests with future page loads.
+It is tricky to correlate previous speculative requests with future page loads.
 
 Additionally, many resources or navigations may be served from caches (CDNs, brwoser caches...etc.) further making this difficult (impossible?) to measure server-side.
 
