@@ -12,7 +12,7 @@ This proposal addresses this by exposing information about unused speculative lo
 ## Goals
 
 1. Enable developers to measure the effectiveness of their speculation rules and preload strategies. 
-1. Expose relevant metadata (speculation rules [tags](https://html.spec.whatwg.org/C#prefetch-record-tags), "as" attribute values) to make the above measurement actionable.
+1. Expose relevant metadata ([speculation rules tags](https://html.spec.whatwg.org/C#prefetch-record-tags), `as` attribute values) to make the above measurement actionable.
 1. Only expose speculation data after the page starts [unloading](https://html.spec.whatwg.org/C#unload-a-document), to reduce potential confusion.
 1. Only expose data on user actions in the current document (even for cross-origin speculative loads), without exposing cross-origin data.
 
@@ -21,19 +21,27 @@ This proposal addresses this by exposing information about unused speculative lo
 
 ## API Design
 
-We will extend the event object that "pagehide" gets as input to include a `speculations` attribute, which will hold information about unused preloads, speculation rules prefetches and speculation rules prerenders.
+We will extend the event object that the `pagehide` event gets as input to include a `speculations` attribute, which will hold information about unused preloads, speculation rules navigational prefetches and speculation rules prerenders.
 
 The information contained would be:
 - Preload
   - URL
   - The [`as` attribute](https://html.spec.whatwg.org/#attr-link-as) value, as it can often lead to mismatches and unused preloads
   - The `crossorigin` attribute value, as it can similarly lead to mismatches
-- Speculation rules navigational Prefetch
+- Speculation rules navigational prefetch
   - URL
   - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
-- Speculation Rules Prerender
+- Speculation rules prerender
   - URL
   - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
+
+### Why `pagehide`?
+
+Only on page unload is the final state of preload usage and/or speculations known. `pagehide` is the preferred event to handle over `beforeunload` (which can be cancelled) and `unload` (which has reliability issues for bfcache-eligible pages and [is being deprecated](https://developer.chrome.com/docs/web-platform/deprecating-unload)).
+
+Note that `pagehide` does still not have reliability guarantees, particularly on mobile, if the page is dismissed without being unloaded (e.g. killed while backgrounded). However, the alternative `visibilitychange` event,  while being the last reliable event, does not indicate the page is being navigated away from, and may also be called multiple times as tabs are switched back and forth.
+
+The intent of the API is to provide a means of reasonably measuring preload/speculation usage across a broad set of page loads rather than to provide comprehensive guarantees of reporting for every page load, so this reliability issue is a tradeof to reduce developer complexity of other alternatives.
 
 ### Example Usage
 
@@ -55,7 +63,6 @@ window.addEventListener('pagehide', (event) => {
 });
 ```
 
-
 ## Key Concepts
 
 ### "Unused" Definition
@@ -65,6 +72,10 @@ The determination is made at pagehide time by comparing all tracked speculations
 Whether or not a speculation was successful (e.g. didn't result in a 403) is not relevant. A failed speculation that the user ended up going to its target will be considered "used".
 
 A preload is considered **unused** if no resource load during the page lifetime [consumed](https://html.spec.whatwg.org/multipage/links.html#consume-a-preloaded-resource) it from the [map of preloaded resources](https://html.spec.whatwg.org/multipage/links.html#map-of-preloaded-resources).
+
+### bfcache handling
+
+Uponk restore from bfcache, counts will not be reset and it's possible for unused preloads/speculations to reduce on second and subsequent navigations away from such pages.
 
 ## Security and Privacy Considerations
 
@@ -76,6 +87,8 @@ Beyond that, this proposal can potentially make it easier to access same-origin 
 ## Considered Alternatives
 
 ### PerformanceObserver API
+
+### An imperitive JavaScript API (e.g. document.unusedPreloads)
 
 ### Reporting API
 
