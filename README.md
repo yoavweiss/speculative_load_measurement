@@ -45,8 +45,10 @@ It will have the following shape:
 * `URL` - the URL of the resource.
 * `as` - The reflected [`as` attribute](https://html.spec.whatwg.org/C#attr-link-as) value, as it can often lead to mismatches and unused preloads
 * `crossorigin` - an enum representing the `crossorigin` attribute value, as it can similarly lead to mismatches
+* `type` - the type of the speculative fetch. e.g. "prefetch", "prerender" or "prerender-until-script"
 * `tags` - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
 * `eagerness` - The [eagerness](https://html.spec.whatwg.org/C#speculation-rule-eagerness) of the rule that lead to the speculative load.
+* `used` - See definition below, under "key concepts".
 
 ### Why `pagehide`?
 
@@ -76,7 +78,7 @@ window.addEventListener('pagehide', (event) => {
 
 ## Key Concepts
 
-### "Unused" Definition
+### "Used" Definition
 
 A speculative navigation is considered **unused** if it was initiated but the user navigated to a different URL than the speculation target.
 The determination is made at pagehide time by comparing all tracked speculations against the URL of the navigation that triggered the page unload.
