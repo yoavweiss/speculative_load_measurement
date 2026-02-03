@@ -26,17 +26,29 @@ This proposal addresses this by exposing information about unused speculative lo
 
 We will extend the event object that the `pagehide` event gets as input to include a `speculations` attribute, which will hold information about unused preloads, speculation rules navigational prefetches and speculation rules prerenders.
 
-The information contained would be:
-- Preload
-  - URL
-  - The [`as` attribute](https://html.spec.whatwg.org/#attr-link-as) value, as it can often lead to mismatches and unused preloads
-  - The `crossorigin` attribute value, as it can similarly lead to mismatches
-- Speculation rules navigational prefetch
-  - URL
-  - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
-- Speculation rules prerender
-  - URL
-  - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
+It will have the following shape:
+```
+{
+  preloads: [
+    { url: '...', as: '...', crossorigin: '...', used: true },
+    { url: '...', as: '...', crossorigin: '...', used: false },
+    // ...
+  ],
+  navigations: [
+    { type: 'prefetch', url: '...', tags: '...', eagerness: '...', used: false },
+    { type: 'prerender', url: '...', tags: '...', eagerness: '...', used: true },
+    // ...
+  ]
+}
+```
+
+* `URL` - the URL of the resource.
+* `as` - The reflected [`as` attribute](https://html.spec.whatwg.org/C#attr-link-as) value, as it can often lead to mismatches and unused preloads
+* `crossorigin` - an enum representing the `crossorigin` attribute value, as it can similarly lead to mismatches
+* `type` - the type of the speculative fetch. e.g. "prefetch", "prerender" or "prerender-until-script"
+* `tags` - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
+* `eagerness` - The [eagerness](https://html.spec.whatwg.org/C#speculation-rule-eagerness) of the rule that lead to the speculative load.
+* `used` - See definition below, under "key concepts".
 
 ### Why `pagehide`?
 
@@ -50,7 +62,7 @@ The intent of the API is to provide a means of reasonably measuring preload/spec
 
 ```javascript
 window.addEventListener('pagehide', (event) => {
-  const { unusedPreloads, unusedNavigationalPrefetches, unusedPrerenders } = event.speculations;
+  const { preloads, navigations } = event.speculations;
 
   // Send unused speculation data to analytics endpoint
   fetch('/analytics/unused-speculations', {
@@ -58,9 +70,7 @@ window.addEventListener('pagehide', (event) => {
     keepalive: true,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      unusedPreloads,
-      unusedNavigationalPrefetches,
-      unusedPrerenders
+      preloads, navigations
     })
   });
 });
@@ -68,7 +78,7 @@ window.addEventListener('pagehide', (event) => {
 
 ## Key Concepts
 
-### "Unused" Definition
+### "Used" Definition
 
 A speculative navigation is considered **unused** if it was initiated but the user navigated to a different URL than the speculation target.
 The determination is made at pagehide time by comparing all tracked speculations against the URL of the navigation that triggered the page unload.
