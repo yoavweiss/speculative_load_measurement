@@ -131,7 +131,16 @@ Finally, one of [the non-goals](#non-goals) is to help react to unsuccessful spe
 
 ### Reporting API
 
-While a Reporting API can be most accurate in terms of the point in time it can send the information (e.g. after the page was already dismissed, and potentially after eviction from the bfcache), the Reporting API presents some challenges to developers, who'd need to set up new collection backends and would need to join the data reported by the API, with other performance data collected through JS.
+While a Reporting API can be most accurate in terms of the point in time it can send the information (e.g. after the page was already dismissed, and potentially after eviction from the bfcache), the Reporting API presents some challenges to developers:
+
+It requires a dedicated backend collection point. Smaller sites in particular without dedicated endpoint solutions often use analytics solutions (e.g. Google Analytics) which need the payload in a certain format and do not support the Reporting API directly.
+
+Once the data is collected, developers would frequently need to join the data reported by the API, with other performance data collected through JavaScript.
+
+Finally, using the Reporting API would also give less control over how much of the information is sent over the network. Sites may only be interested in some of the information (e.g. just counts and not URLs, or only the `navigations` data without the without the `preload` data). This can of course be filtered server 
+-side but if the data is not needed then it's preferable not to send it in the first place.
+
+These reasons go some way to explaining why [the Reporting API usage](https://chromestatus.com/metrics/feature/timeline/popularity/56650) is considerably smaller than [performance API usage like LCP](https://chromestatus.com/metrics/feature/timeline/popularity/2927). In our experience, the Reporting API is a more advanced API for data that cannot be measured in JavaScript (e.g. browser crashes, CSP violations that may prevent JavaScript from even loading... etc.).
 
 ## Frequently Asked Questions
 
