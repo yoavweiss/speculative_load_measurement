@@ -9,6 +9,17 @@ However, developers currently lack visibility into whether these speculations we
 
 This proposal addresses this by exposing information about unused speculative loads on page dismissal, enabling developers to measure speculation effectiveness and optimize their speculative load strategies, to pick the trade-off that's right for them.
 
+## Use-cases
+
+When experimenting with speculative loads, developers need to be able to answer questions such as:
+* Does preloading more/certain resources cause the site's performance metrics to get better or worse?
+* How often do my preloaded resources go unused? Which preloaded resource should I stop preloading?
+* Is more aggressive prefetching/prerendering worth the cost tradeoff? User performance improves by X%, but server-cost is increased by Y%.
+* What links should I stop prefetching/prerendering, as they almost never get used?
+* What's the benefit from moving preloads to use Early Hints?
+
+This proposal aims to enable developers answering those questions.
+
 ## Goals
 
 1. Enable developers to measure the effectiveness of their speculation rules and preload strategies. 
@@ -30,8 +41,8 @@ It will have the following shape:
 ```
 {
   preloads: [
-    { url: '...', as: '...', crossorigin: '...', used: true },
-    { url: '...', as: '...', crossorigin: '...', used: false },
+    { url: '...', as: '...', crossorigin: '...', earlyhint: true, used: true },
+    { url: '...', as: '...', crossorigin: '...', earlyhint: true, used: false },
     // ...
   ],
   navigations: [
@@ -48,6 +59,7 @@ It will have the following shape:
 * `type` - the type of the speculative fetch. e.g. "prefetch", "prerender" or "prerender-until-script"
 * `tags` - The relevant [tags](https://html.spec.whatwg.org/C#prefetch-record-tags).
 * `eagerness` - The [eagerness](https://html.spec.whatwg.org/C#speculation-rule-eagerness) of the rule that lead to the speculative load.
+* `earlyhint` - whether a preload was delivered using an early hint header.
 * `used` - See definition below, under "key concepts".
 
 ### Why `pagehide`?
