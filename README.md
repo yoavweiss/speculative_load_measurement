@@ -7,7 +7,7 @@
 Modern web applications can use speculative loading techniques to improve navigation performance.
 However, developers currently lack visibility into whether these speculations were actually used, making it hard for them to deploy higher eagerness values than "conservative". Such values can result in wasted user bandwidth and server-side load, and currently developers have no way to weigh the trade-off between those and potential performance gains.
 
-This proposal addresses this by exposing information about unused speculative loads on page dismissal, enabling developers to measure speculation effectiveness and optimize their speculative load strategies, to pick the trade-off that's right for them.
+This proposal addresses this by exposing information about used and unused speculative loads on page dismissal, enabling developers to measure speculation effectiveness and optimize their speculative load strategies, to pick the trade-off that's right for them.
 
 ## Use-cases
 
